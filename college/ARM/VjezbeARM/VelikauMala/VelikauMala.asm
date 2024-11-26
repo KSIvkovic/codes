@@ -1,0 +1,23 @@
+.global _start
+.text
+
+_start:	
+	adr	r0, pod
+	MOV	sp, #0x1000
+
+
+poc:
+	LDRB r1, [r0]
+	CMP	r1, #0
+	BEQ	stop
+	ORR	r1, r1, #0x60
+	STRB r1, [r0], #1
+	b	poc
+
+	
+stop:
+	B	stop
+pod:
+.byte	0x41, 0x42, 0x63, 0x44, 0x45, 0x66, 0x67, 0x48, 0x69, 0x6A, 0x00, 0x00
+
+.end

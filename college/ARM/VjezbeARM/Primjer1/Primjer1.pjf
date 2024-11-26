@@ -1,0 +1,77 @@
+# Embest IDE Project File, Format Version 1.00
+# WARNING: DO NOT EDIT OR DELETE THIS PROJECT FILE!
+
+<BEGIN> PROJECT_NAME
+Primjer1
+<END>
+
+<BEGIN> CONFIG
+
+	<BEGIN> CPU
+	MODULE=arm7.DLL
+	FAMILY=ARM7
+	FAMILYID=1
+	MEMBER=ARM7
+	MEMBERID=1
+	MAKER=SUMSUNG
+	CHIP=S3c4530a
+	ENDIAN=0
+	<END>
+
+	<BEGIN> DEBUG
+	LINK=.\debug\Primjer1.elf
+	AUTODOWNLOAD=TRUE
+	AUTOSCRIPT=FALSE
+	VERIFY=TRUE
+	USEMEMMAP=FALSE
+	EXECFDOWN=TRUE
+	EXECFENTRY=FALSE
+	SYMBOL=C:\EmbestIDE\Vjezbe\Primjer1\debug\Primjer1.elf
+	DOWNLOAD=C:\EmbestIDE\Vjezbe\Primjer1\debug\Primjer1.elf
+	DOWNLOADADDR=0x8000
+	<END>
+
+	<BEGIN> REMOTE
+	DEVICE=SimArm7.DLL
+	SPEED=0
+	COMMTYPE=PARALLEL
+	PARALLEL=LPT1
+	<END>
+
+	<BEGIN> DIR
+	SUBDIR=FALSE
+	<END>
+
+<END>
+
+<BEGIN> BUILD_CONFIG
+	CONFIG_DLL=GccArmSettingPage.dll
+	<BEGIN> COMPILE_COMMAND_LINE
+	-gdwarf -c $(SOURCE_FILE) -o.\debug\$(OBJ_FILE)
+	<END>
+	<BEGIN> ASSEMBLE_COMMAND_LINE
+	-gdwarf2 $(SOURCE_FILE) -o.\debug\$(OBJ_FILE)
+	<END>
+	<BEGIN> LINK_COMMAND_LINE
+	arm-elf-ld -o.\debug\Primjer1.elf $(OBJ_FILES)
+	<END>
+<END>
+
+<BEGIN> PROJECT_FILES
+
+	<BEGIN> GROUP="Project Source Files"
+		<PROP> GROUP_FILTER="*.c;*.cpp;*.cc;*.cxx;*.s;*.asm"
+
+		<BEGIN> SOURCE_FILE
+		SOURCE=.\Primjer1.s
+		STATUS=CLOSE
+		<END>
+
+	<END>
+
+	<BEGIN> GROUP="Project Header Files"
+		<PROP> GROUP_FILTER="*.h;*.inl;*.mac;*.inc"
+
+	<END>
+
+<END>

@@ -1,0 +1,28 @@
+dijeljenje
+
+.global _start
+
+.text
+
+_start:					/* Poèetak programa */
+
+	adr	r0, pod			/* stavlja se u ro adresa podataka */
+	LDR	r1, [r0], #4	/* u r1 prvi podatak iz memorije 6 */
+	LDR	r2, [r0], #4	/* u r2 drugi podatak iz memorije 35 */
+	MOV r3, #0			/* sluzi kao brojac koliko puta 6 stane u 35 */
+petlja:
+	
+	SUB r2, r2, r1		/* oduzimamo r1 od r2 */
+	CMP r2, #0			/* usporedba rezultata s nulom */
+	BLT	 stop			/* ako je manji od 0 prekid */
+	ADD r3, r3, #1		/* inace povecaj brojac za 1 */
+	B 	petlja			/* povrataka na pocetak */
+	
+stop:
+
+	B	stop			/* program end and get into endless loop */
+
+pod:
+.word 		6, 35
+
+.end

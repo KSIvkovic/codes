@@ -1,0 +1,57 @@
+.equ	stack_top, 0x1000
+.global	_start
+.text
+
+_start:
+
+	adr	r0, podaci			/* pohrana adrese podataka u memoriju */
+	MOV sp, #stack_top		/* postavljanje vrha stoga na 0x1000 */
+		
+	STR	r0, [sp], #-4		/* pohrana prijesanjeg stanja registara na stog; ovdje je samo jedan registar al da smo ih */
+							/* više koristili tribalo bi ih sve pohranit. Nije potrebno kod nas primjera ovo radit al */
+							/* dobra praksa svejedno :) */
+									
+	STR r0, [sp], #-4		/* stavljanje argumenata funkcije tj. procedure na stog prije poziva procedure */
+	BL	pomak				/* poziv procedure */
+		
+	LDR r0, [sp, #4]!		/* skidanje prijsanjeg stanja registra sa stoga i pohrana u registar */
+	B 	stop
+
+stop:
+	B	stop              	/* kraj programa, beskonacna petlja */
+        
+pomak:
+		
+	LDR r0, [sp, #4]!		/* skidanje argumenta sa stoga i pohrana u registar */
+	
+petlja:
+	
+	LDR r1, [r0], #4		/* pohrana podatka u registar r1 i povecanje r0 za 4 */
+	CMP r1, #0xF0000000		/* provjera da li smo dosli do zadnjeg clana */
+	BEQ kraj				/* ako jesmo skok na kraj procedure */
+							/* ako nismo */
+	AND r2, r1, #0xF		/* uzimamo zadnja 4 bita iz r1 koristeci masku 0x0000000F i operaciju AND */
+	MOV	r2, r2, LSL#4		/* pomicemo uzeta 4 bita lijevo 4 bita */
+	
+	AND r3, r1, #0xF0		/* uzimamo predzadnja 4 bita iz r1 koristeci masku 0x000000F0 i operaciju AND */
+	MOV r3, r3, LSR#4		/* pomicemo uzeta 4 bita desno za 4 bita */
+	
+	AND r1, r1, #0xFFFFFF00	/* stavljamo zadnjih 8 bita na 0 koristeci masku 0xFFFFFF00 i operaciju AND */
+	ORR r1, r1, r2			/* dodajemo pomaknute bitove... */
+	ORR r1, r1, r3			/* koristeci OR operaciju */
+	
+	STR r1, [r0, #-4]		/* pohrana promjenjenog broja na lokaciju u memoriji s koje smo ga i uzeli */
+	
+	B petlja
+	
+kraj:
+
+	MOV pc, lr	/* povratak na mjesto poziva funkcije; moglo se i napisat MOV pc, r14 */
+	
+	
+		
+podaci:
+
+	.word 0x12345678,0x11110101,0x00001010,0x87654321, 0xF0000000
+             
+.end

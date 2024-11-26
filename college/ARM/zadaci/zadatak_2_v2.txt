@@ -1,0 +1,50 @@
+.global	_start
+.text
+
+_start:
+
+	adr	r0, podaci			/* pohrana adrese podataka u memoriju */
+	
+	MOV r1, #0x1000			/* postavljanje r1 na adresu u memoriji 0x1000 */
+	
+punjenje:
+	
+	LDR r2, [r0], #4		/* pohrana iz podataka iz memorije u registar te povecanje r0 */
+	STR r2, [r1], #4		/* pohrana podataka iz registra u memoriju te povecanje r1 */
+	CMP r2, #0xF0000000		/* provjera da li smo dosli do zadnjeg clana */
+	BNE punjenje			/* ako nismo onda na pocetak petlje */
+							/* ako jesmo... */
+	MOV r0, #0x1000			/* pohrana lokacije podataka u memoriji u registar */
+	
+petlja:
+	
+	LDR r1, [r0], #4		/* pohrana podatka u registar r1 i povecanje r0 za 4 */
+	CMP r1, #0xF0000000		/* provjera da li smo dosli do zadnjeg clana */
+	BEQ stop				/* ako jesmo skok na kraj */
+							/* ako nismo */
+	AND r2, r1, #0xFF00		/* uzimamo srednjih desnih 8 bitova iz r1 koristeci masku 0x0000FF00 i operaciju AND */
+	MOV	r2, r2, LSL#8		/* pomicemo uzetih 8 bita lijevo 8 bita */
+	
+	AND r3, r1, #0xFF0000	/* uzimamo srenjih ljevih 8 bita iz r1 koristeci masku 0x00FF0000 i operaciju AND */
+	MOV r3, r3, LSR#8		/* pomicemo uzeta 8 bita desno za 8 bita */
+	
+	AND r4, r1, #0xFF000000	/* uzimamo 8 prvih bitova koristeci masku 0xFF000000 i operaciju AND */	
+	AND r1, r1, #0x000000FF	/* uzimamo 8 zadnjih bitova koristeci masku 0x000000FF i operaciju AND */	
+	
+	/*zbog nekog razloga neda da se odma uzme 16 srednjih bitova pa san mora koristit dvi odvojene maske*/
+	
+	ORR r1, r1, r2			/* dodajemo pomaknute bitove... */
+	ORR r1, r1, r3			/* koristeci... */
+	ORR r1, r1, r4			/* OR operaciju */
+	STR r1, [r0, #-4]		/* pohrana promjenjenog broja na lokaciju u memoriji s koje smo ga i uzeli */
+	
+	B petlja
+
+stop:
+	B	stop              	/* kraj programa, beskonacna petlja */
+			
+podaci:
+
+	.word 0x12345678,0x11110101,0x00001010,0x87654321, 0xF0000000
+             
+.end

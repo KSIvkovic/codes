@@ -1,0 +1,66 @@
+.equ stack_top, 0x1000
+.global	_start
+.text
+
+_start:
+
+	adr	r0, podaci			/* pohrana adrese podataka u memoriju */
+	
+	MOV sp, #stack_top		/* postavljanje vrha stoga u memoriji 0x1000 */
+	
+petlja:
+	
+	LDR r1, [r0], #4		/* u registar pohranjujemo prvi podatak i povecavamo r0 za 4 */
+	
+	STR r1, [sp], #-4		/* pohrana prijesanjeg stanja registra r1 na stog */
+	STR r0, [sp], #-4		/* pohrana prijesanjeg stanja registra r2 na stog */
+	ADD sp, sp, #-4			/* ostavljanje praznog mjesta na stogu za povratnu vrijednost */
+	
+	STR r1, [sp], #-4		/* pohrana argumenta procedure na stog */
+	BL procedura
+	
+	LDR r2, [sp, #4]!		/* dohvat povratne vrijednosti procedure sa stoga */
+	
+	LDR r0, [sp, #4]!		/* povrat prijasnje vrijednosti stanja registra r0 sa stoga */
+	LDR r1, [sp, #4]!		/* povrat prijasnje vrijednosti stanja registra r1 sa stoga */
+	
+	STR r2, [r0, #-4]		/* pohrana nove vrijednosti na staru lokaciju u memoriji */
+	CMP r2, #0xF0000000		/* provjera da li smo dosli do zadnjeg clana */
+	BNE petlja				/* ako nismo skok na pocetak */
+							/* ako jesmo */
+stop:
+	B	stop              	/* kraj programa, beskonacna petlja */
+						
+procedura:
+	
+	LDR r1, [sp, #4]!		/* pohrana podatka u registar r1 i povecanje r0 za 4 */
+	CMP r1, #0xF0000000		/* provjera da li smo dosli do zadnjeg clana */
+	BEQ kraj				/* ako jesmo skok na kraj; ovdje se moglo odma skocit na stop i preskocit ponovno provjeru */
+							/* u glavnom dijelu programa. U tom slucaj kraj labela nebi bila potrebna */
+							
+							/* ako nismo */
+	AND r2, r1, #0xFF		/* uzimamo zadnjih 8 bitova iz r1 koristeci masku 0x000000FF i operaciju AND */
+	MOV	r2, r2, LSL#24		/* pomicemo uzetih 8 bita lijevo 24 bita */
+	
+	AND r3, r1, #0xFF000000	/* uzimamo prvih 8 bita iz r1 koristeci masku 0xFF000000 i operaciju AND */
+	MOV r3, r3, LSR#24		/* pomicemo uzeta 8 bita desno za 24 bita */
+	
+	AND r4, r1, #0xFF00		/* uzimamo 8 ljevih srednjih bita koristeci masku 0xFF00 i operaciju AND */
+	AND r1, r1, #0xFF0000	/* uzimamo 8 desnih srednjih bitova koristeci masku 0xFF0000 i operaciju AND */
+	
+/*zbog nekog razloga neda da se odma uzme 16 srednjih bitova pa san mora koristit dvi odvojene maske*/
+	
+	ORR r1, r1, r2			/* dodajemo pomaknute bitove... */
+	ORR r1, r1, r3			/* koristeci...*/
+	ORR r1, r1, r4			/*  OR operaciju */
+	
+kraj:
+
+	STR r1, [sp, #4]		/* pohrana promjenjenog broja na lokaciju na stogu koju smo ostavili praznu na pocetku */
+	MOV pc, lr				/* povratak na mjesto poziva funkcije; moglo se i napisat MOV pc, r14 */
+			
+podaci:
+
+	.word 0x12345678,0x11110101,0x00001010,0x87654321, 0xF0000000
+             
+.end

@@ -1,0 +1,38 @@
+Program u C-u prebaci u asembler:
+int	x = 20, y = 35, rez = 0;
+rez = x - y;
+
+if (rez > 0)
+    rez = 1;
+else
+    rez = 0;
+
+.global _start
+
+.text
+
+_start:					/* Poèetak programa */
+
+	adr	r0, pod			/* stavlja se u ro adresa podataka */
+	LDR	r1, [r0], #4	/* u r1 prvi podatak iz memorije 20 */
+	LDR	r2, [r0], #4	/* u r2 drugi podatak iz memorije 35 */
+	
+	SUB r3, r1, r2
+	CMP r3, #0			/*usporedba rezultata s nulom*/
+	BLE	 manji			/*ako je manji ili jednak 0 */
+	
+	MOV r3, #1
+	B 	stop
+	
+manji:
+
+	MOV r3, #0
+	
+stop:
+
+	B	stop			/* program end and get into endless loop */
+
+pod:
+.word 		20, 35
+
+.end

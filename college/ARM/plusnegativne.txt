@@ -1,0 +1,16 @@
+//.word -1, -3, 5,8, -5, 4, 0  zbroji ne pozitivne
+
+start:
+	adr r0, podaci
+	mov r2, #0
+petlja:	
+	LDR r1, [r0], #4		
+	CMP r1, #0
+	BEQ stop
+	CMP r1, #0
+	BGT petlja
+	ADD r2, r2, r1
+	B petlja
+stop:
+	B stop
+

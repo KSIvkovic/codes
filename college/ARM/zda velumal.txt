@@ -1,0 +1,13 @@
+većina isto kao za zamjenu bajta
+
+mov r1, #01100000
+mov r2, #0xF0
+mov r2, r2, LSL#8
+ponovo:
+ldrb r3, [r2], #1
+cmp r3, #0
+beq kraj
+orr r3, r3, r1
+b ponovo
+kraj:
+b kraj
