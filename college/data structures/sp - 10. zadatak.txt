@@ -1,0 +1,100 @@
+
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+ 
+struct cvor;
+struct stog;
+typedef struct cvor* stablo;
+typedef struct stog* poz;
+
+stablo ucitaj(stablo, poz);
+void push(stablo, poz);
+stablo pop(poz);
+void ispis(stablo);
+
+struct cvor{
+	char* el;
+	stablo l;
+	stablo d;
+};
+
+struct stog{
+	stablo pl;
+	poz next;
+};
+
+void main()
+{
+	stablo root=NULL;
+	struct stog head;
+	head.next=NULL;
+	root=ucitaj(root, &head);
+	printf("Infix izraz:\n");
+	ispis(root);
+	getchar();
+	getchar();
+}
+
+stablo ucitaj(stablo s, poz t)
+{
+	FILE *stream;
+	char imedat[128];
+	stablo q;
+	printf("\n Ime datoteke:\n");
+	scanf_s(" %s", imedat, 128);
+	fopen_s(&stream, imedat, "r");
+	if(stream==NULL)
+		printf("Datoteka nije otvorena!");
+	else
+	{
+		while(!feof(stream))
+		{
+		q=(stablo)malloc(sizeof(struct cvor));
+		q->el=(char*)malloc(sizeof(char)*5);
+		q->el[4]='\0';
+		fscanf_s(stream, " %s", q->el, 4);
+		q->l=NULL;
+		q->d=NULL;
+		if(q->el[0]=='+'||q->el[0]=='-'||q->el[0]=='*'||q->el[0]=='/')
+		{
+			q->l=pop(t);
+			q->d=pop(t);
+			push(q, t);
+		}
+		else
+			push(q, t);
+		}
+		s=pop(t);
+		return s;
+	}
+}
+
+void ispis(stablo s)
+{
+	if(s!=NULL)
+	{
+		ispis(s->l);
+		printf(" %s ", s->el);
+		ispis(s->d);
+	}
+}
+
+void push(stablo s, poz t)
+{
+	poz q=(poz)malloc(sizeof(struct stog));
+	q->pl=s;
+	q->next=t->next;
+	t->next=q;
+}
+
+stablo pop(poz t)
+{
+	stablo q;
+	poz temp;
+	temp=t->next;
+	t->next=temp->next;
+	q=temp->pl;
+	free(temp);
+	return q;
+}		 

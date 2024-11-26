@@ -1,0 +1,229 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+
+struct student;
+typedef struct student* Position;
+
+struct student
+{
+	char ime[128];
+	char prezime[128];
+	int godina_rodenja;
+	Position Next;
+};
+
+void Unos(Position);
+void Ispis(Position);
+void UnosK(Position);
+Position Trazi(Position);
+Position TraziPret(Position);
+void Brisi(Position);
+void Sort(Position);
+void CitajDat(Position);
+void IspisiDat(Position);
+
+
+void main(void)
+{
+	struct student head;
+	head.Next = NULL;
+	char c = 0;
+	Position F = NULL;
+
+	while(c!='k')
+	{
+		printf("\t\nIzbornik");
+		printf("\t\n1.Unos na pocetak");
+		printf("\t\n2.Ispis");
+		printf("\t\n3.Unos na kraj");
+		printf("\t\n4.Trazi po prezimenu");
+		printf("\t\n5.Brisi");
+		printf("\t\n6.Unos iza elementa");
+		printf("\t\n7.Unos ispred elementa");
+		printf("\t\n8.Sortiranje");
+		printf("\t\n9.Citaj iz datoteke");
+		printf("\t\nA.Upisi u datoteku");
+		printf("\t\n\nIzbor : ");
+		scanf(" %c", &c);
+		switch(c)
+		{
+		case '1':
+			Unos(&head);
+			break;
+		case '2':
+			Ispis(head.Next);
+			break;
+		case '3':
+			UnosK(&head);
+			break;
+		case '4':
+			F = Trazi(head.Next);
+			if(F!=NULL)
+				printf("Trazeni student je: %s %s %d", F->ime, F->prezime, F->godina_rodenja);
+			else
+				printf("Student ne postoji u listi.");
+			break;
+		case '5':
+			Brisi(head.Next);
+			break;
+		case '6':
+			F=Trazi(head.Next);
+			Unos(F);
+			break;
+		case '7':
+			F=TraziPret(head.Next);
+			Unos(F);
+			break;
+		case '8':
+			Sort(&head);
+			break;
+		case '9':
+			CitajDat(&head);
+			break;
+		case 'A':
+			IspisiDat(head.Next);
+			break;
+
+		default:
+			printf("Krivi unos! Unesite ponovno.");
+			break;
+		}
+	}
+}
+
+void Unos (Position P)
+{
+	Position Q;
+	Q = (Position) malloc (sizeof(struct student));
+	printf("Unesite ime, prezime i godinu rodenja studenta:\n");
+	scanf_s(" %s %s %d", Q->ime, 128, Q->prezime, 128, &Q->godina_rodenja);
+	Q->Next=P->Next;
+	P->Next=Q;
+}
+
+void Ispis(Position P)
+{
+	if(P==NULL)
+		printf("\nLista je prazna!\n");
+	while(P!=NULL)
+	{
+		printf("\n %s %s %d \n", P->ime, P->prezime, P->godina_rodenja);
+		P=P->Next;
+	}
+}
+
+void UnosK(Position P)
+{
+	while(P->Next!=NULL)
+	{
+		P=P->Next;
+	}
+	Unos(P);
+}
+
+Position Trazi(Position P)
+{
+	char prez[128];
+	printf("Unesite trazeno prezime:\n ");
+	scanf_s(" %s", prez, 128);
+	while(P!=NULL && _strcmpi(P->prezime, prez) != 0)
+	{
+		P=P->Next;
+	}
+	return P;
+}
+
+Position TraziPret(Position P)
+{
+	char prez[128];
+	printf("Unesite trazeno prezime:\n ");
+	scanf_s(" %s", prez, 128);
+	while(P->Next!=NULL && _strcmpi(P->Next->prezime, prez)!=0)
+	{
+		P=P->Next;
+	}
+	return P;
+}
+
+void Brisi(Position P)
+{
+	Position Q;
+	P=TraziPret(P);
+	Q=P->Next;
+	P->Next=Q->Next;
+	free(Q);
+}
+
+void Sort(Position P)
+{
+	Position i, j, jp, end;
+
+	end = NULL;
+
+	while(P->Next != end)
+	{
+		i = P;
+		jp = i->Next;
+		j = jp->Next;
+
+		while(j != end)
+		{
+			if(_strcmpi(jp->prezime, j->prezime) < 0)
+			{
+				jp->Next = j->Next;
+				j->Next = jp;
+				i->Next = j;
+			}
+			else
+				i = i->Next;
+			jp = i->Next;
+			j = jp->Next;
+		}
+		end = jp;
+	}
+}
+
+void CitajDat(Position P)
+{
+	char dat[128];
+	FILE *stream;
+	printf("Unesite ime datoteke iz koje zelite ucitati listu:");
+	scanf_s(" %s", dat, 128);
+	fopen_s(&stream, dat, "r");
+	if(stream==NULL)
+		printf("Datoteka nije otvorena!");
+	else
+	{
+		while(!feof(stream))
+		{
+		Position Q = (Position) malloc (sizeof(struct student));
+		fscanf_s(stream, " %s %s %d", Q->ime, 128, Q->prezime, 128, &Q->godina_rodenja);
+		Q->Next=P->Next;
+		P->Next=Q;
+		P=P->Next;
+		}
+		fclose(stream);
+	}
+}
+
+void IspisiDat(Position P)
+{
+	char dat[128];
+	FILE *stream;
+	printf("Unesite ime datoteke u koju zelite ispisati listu:");
+	scanf_s(" %s", dat, 128);
+	fopen_s(&stream, dat, "w+");
+	if(stream==NULL)
+		printf("Datoteka nije otvorena!");
+	else
+	{
+		while(P!=NULL)
+		{
+			fprintf_s(stream, "\n %s %s %d\n", P->ime, P->prezime, P->godina_rodenja);
+			P=P->Next;
+		}
+		fclose(stream);
+	}
+}

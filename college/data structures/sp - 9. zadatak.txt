@@ -1,0 +1,155 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<ctype.h>
+
+struct cvor;
+typedef struct cvor* stablo;
+typedef struct cvor* poz;
+
+stablo unos(int x, stablo s);
+stablo brisi(int x, stablo s);
+poz trazi(int x, stablo s);
+poz min(stablo s);
+poz max(stablo s);
+void ispis(stablo s);
+
+struct cvor{
+	int el;
+	poz l;
+	poz d;
+};
+
+void main()
+{
+	stablo root = NULL;
+	poz tf = NULL;
+	int x;
+	char c = 0;
+	while(c!='k')
+	{
+		printf("\nIzbornik:\n");
+		printf("1-Unos\n");
+		printf("2-Ispis\n");
+		printf("3-Trazi\n");
+		printf("4-Brisi\n");
+		printf("k-kraj\n");
+		scanf(" %c", &c);
+		switch(c)
+		{
+		case '1':
+			printf("Unesite element:\n");
+			scanf_s("%d", &x);
+			root=unos(x, root);
+			break;
+		case '2':
+			ispis(root);
+			break;
+		case '3':
+			printf("Trazeni element:\n");
+			scanf_s("%d", &x);
+			tf=trazi(x, root);
+			if(tf==NULL)
+				printf("\nNe postoji!\n");
+			else 
+				printf("\nPostoji!\n");
+			break;
+		case '4': 
+			printf("Koji element zelite izbrisati?\n");
+			scanf_s("%d", &x);
+			root=brisi(x, root);
+			break;
+		default:
+			printf("Krivi unos!");
+			break;
+		}
+	}
+}
+
+stablo unos(int x,stablo s)
+{
+	if(NULL==s)
+	{
+		s=(stablo) malloc (sizeof(struct cvor));
+		s->el=x;
+		s->l=NULL;
+		s->d=NULL;
+	}
+	else if(x==s->el)
+		printf("Element vec postoji u listi.\n");
+	else if(x<s->el)
+		s->l=unos(x, s->l);
+	else 
+		s->d=unos(x, s->d);
+	return s;
+}
+
+void ispis(stablo s)
+{
+	if(s!=NULL)
+	{
+	ispis(s->l);
+	printf("\t%d", s->el);
+	ispis(s->d);
+	}
+}
+
+poz trazi(int x, stablo s)
+{
+	if(NULL==s)
+		return NULL;
+	else if (x<s->el)
+		return trazi(x, s->l);
+	else if (x>s->el)
+		return trazi(x, s->d);
+	return s;
+}
+
+poz min(stablo s)
+{
+	if(s!=NULL)
+	{
+		while(s->l!=NULL)
+			s=s->l;
+	}
+	return s;
+}
+
+poz max(stablo s)
+{
+	if(s!=NULL)
+	{
+		while(s->d!=NULL)
+			s=s->d;
+	}
+	return s;
+}
+
+stablo brisi(int x, stablo s)
+{
+	stablo temp;
+	if(s==NULL)
+		printf("Ne postoji u listi!");
+	else if(x<s->el)
+		s->l=brisi(x, s->l);
+	else if(x>s->el)
+		s->d=brisi(x, s->d);
+	else
+	{
+		if(s->l!=NULL && s->d!=NULL)
+		{
+			temp=min(s->d);
+			s->el=temp->el;
+			s->d=brisi(s->el, s->d);
+		}
+		else
+		{
+			temp=s;
+			if(s->l==NULL)
+				s=s->d;
+			else if (s->d==NULL)
+				s=s->l;
+			free(temp);
+		}
+	}
+	return s;
+}

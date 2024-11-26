@@ -1,0 +1,212 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<ctype.h>
+
+struct Polinom;
+typedef struct Polinom* Position;
+
+struct Polinom
+{
+	int koef;
+	int pot;
+	Position next;
+};
+
+void UcitajIzDat(Position);
+void Ispis(Position);
+void Suma(Position, Position, Position);
+void Umnozak(Position, Position, Position);
+
+void main()
+{
+	struct Polinom P, Q, S, M;
+	P.next=NULL;
+	Q.next=NULL;
+	S.next=NULL;
+	M.next=NULL;
+
+	UcitajIzDat(&P);
+	UcitajIzDat(&Q);
+
+	printf("P(x) = ");
+	Ispis(P.next);
+	printf("\r\n");
+
+	printf("Q(x) = ");
+	Ispis(Q.next);
+	printf("\r\n");
+
+	Suma(P.next, Q.next, &S);
+	printf("S(x) = ");
+	Ispis(S.next);
+	printf("\r\n");
+
+	Umnozak(P.next, Q.next, &M);
+	printf("M(x) = ");
+	Ispis(M.next);
+	printf("\r\n");
+}
+
+void UcitajIzDat(Position P)
+{
+	char imedat[128];
+	FILE *stream;
+	Position Q, temp;
+
+	printf("Unesite ime datoteke: ");
+	scanf_s(" %s", imedat, 128);
+	fopen_s(&stream, imedat, "r");
+	if(stream==NULL)
+		printf("Datoteka nije otvorena.");
+	else
+	{
+		while(!feof(stream))
+		{
+			Q = (Position) malloc (sizeof(struct Polinom));
+			if(Q!=NULL)
+			{
+				fscanf_s(stream, " %d %d ", &Q->koef, &Q->pot);
+				temp = P;
+
+				while(temp->next!=NULL && temp->next->pot > Q->pot)
+					temp = temp->next;
+				if(temp->next!=NULL && temp->next->pot == Q->pot)
+				{
+					temp->next->koef += Q->koef;
+					free(Q);
+					if(temp->next->koef == 0)
+					{
+						Q = temp->next;
+						temp->next = Q->next;
+						free(Q);
+					}
+				}
+				else 
+				{
+				Q->next = temp->next;
+				temp->next = Q;
+				}
+			}
+		}
+		fclose(stream);
+	}
+}
+
+void Ispis(Position P)
+{
+	bool prvi = true;
+	while (P!=NULL)
+	{
+		if(prvi == true)
+		{
+			printf(" %dx^%d ", P->koef, P->pot);
+			prvi=false;
+		}
+		else
+		{
+			if(P->koef<0)
+				printf(" -%dx^%d", (-1)*P->koef, P->pot);
+			else
+				printf(" +%dx^%d", P->koef, P->pot);
+		}
+		P=P->next;
+	}
+}
+
+void Suma(Position A, Position B, Position C)
+{
+	Position Q, temp;
+
+	while(A!=NULL && B!=NULL)
+	{
+		Q = (Position) malloc (sizeof(struct Polinom));
+		if(Q!=NULL)
+		{
+			if(A->pot > B->pot)
+			{
+				Q->koef=A->koef;
+				Q->pot=A->pot;
+				A=A->next;
+			}
+			else if(A->pot < B->pot)
+			{
+				Q->koef=B->koef;
+				Q->pot=B->pot;
+				B=B->next;
+			}
+			else
+			{
+				Q->koef=A->koef+B->koef;
+				Q->pot=A->pot;
+				A=A->next;
+				B=B->next;
+			}
+			Q->next=C->next;
+			C->next=Q;
+
+			C=C->next;
+		}
+		else
+			break;
+	}
+	if(A==NULL)
+		temp = B;
+	else
+		temp = A;
+	while(temp!=NULL)
+	{
+		Q = (Position) malloc (sizeof(struct Polinom));
+		if(Q!=NULL)
+		{
+			Q->koef=temp->koef;
+			Q->pot=temp->pot;
+			temp=temp->next;
+			Q->next = C->next;
+			C->next = Q;
+			C=C->next;
+		}
+		else 
+			break;
+	}
+}
+	
+void Umnozak(Position A, Position B, Position C)
+{
+	Position i, j, k, Q;
+	i=A;
+	while(i!=NULL)
+	{
+		j=B;
+		while(j!=NULL)
+		{
+			Q=(Position)malloc(sizeof(struct Polinom));
+			if(Q!=NULL)
+			{
+				Q->koef=i->koef*j->koef;
+				Q->pot=i->pot+j->pot;
+				k=C;
+				while(k->next!=NULL && k->next->pot > Q->pot)
+					k=k->next;
+				if(k->next!=NULL && k->next->pot == Q->pot)
+				{
+					k->next->koef += Q->koef;
+					free(Q);
+					if(k->next->koef==NULL)
+					{
+						Q=k->next;
+						k->next=Q->next;
+						free(Q);
+					}
+				}
+				else
+				{
+					Q->next=k->next;
+					k->next=Q;
+				}
+			}
+			j=j->next;
+		}
+		i=i->next;
+	}
+}

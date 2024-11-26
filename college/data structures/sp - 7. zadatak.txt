@@ -1,0 +1,100 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+
+struct cvor;
+typedef struct cvor* poz;
+
+void push(poz, int);
+void pop(poz, int[]);
+void ispis(poz);
+void citaj(poz);
+
+struct cvor
+{
+	int el;
+	poz next;
+};
+
+void main()
+{
+	struct cvor head;
+	head.next=NULL;
+	citaj(&head);
+	ispis(head.next);
+	getchar();
+	getchar();
+}
+
+void pop(poz p, int *x)
+{
+	poz q;
+	q=p->next;
+	*x=q->el;
+	p->next=q->next;
+	free(q);
+}
+
+void push(poz p, int x)
+{
+	poz q = (poz)malloc(sizeof(struct cvor));
+	q->el=x;
+	q->next=p->next;
+	p->next=q;
+}
+
+void ispis(poz p)
+{
+	while(p!=NULL)
+	{
+		printf(" [%d]\n", p->el);
+		p=p->next;
+	}
+}
+
+void citaj(poz p)
+{
+	FILE *stream;
+	int i[2];
+	char ime[128];
+	char s[20];
+	printf("Ime datoteke:");
+	scanf_s(" %s", ime, 128);
+	fopen_s(&stream, ime, "r");
+	if(stream==NULL)
+		printf("Datoteka nije otvorena!");
+	else
+	{
+		while(!feof(stream))
+		{
+			fscanf_s(stream, " %s", s,20);
+			if(_strcmpi(s, "+")&&_strcmpi(s, "-")&&_strcmpi(s, "*")&&_strcmpi(s, "/"))
+				push(p, atoi(s));
+			else
+			{
+				pop(p, &i[1]);
+				pop(p, &i[0]);
+
+			switch(s[0])
+			{
+			case '+':
+				i[0]+=i[1];
+				break;
+			case '*':
+				i[0]*=i[1];
+				break;
+			case '-':
+				i[0]-=i[1];
+				break;
+			case '/':
+				i[0]=i[0]/i[1];
+				break;
+			default:
+				break;
+			}
+			push(p, i[0]);
+			}
+		}
+		fclose(stream);
+	}
+}

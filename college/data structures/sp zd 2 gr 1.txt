@@ -1,0 +1,88 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<ctype.h>
+#include<time.h>
+
+struct cvor;
+typedef struct cvor* stablo;
+
+int randnmb(int, int);
+stablo unos(stablo, int);
+void ispis(stablo);
+stablo trazi(stablo, int);
+
+struct cvor
+{
+	int el;
+	stablo l;
+	stablo d;
+};
+
+void main()
+{
+	stablo root=NULL;
+	int i=0;
+	int x=0;
+	stablo temp=NULL;
+	srand((unsigned)time(NULL));
+	while(i<10)
+	{
+	do
+	{
+		x=randnmb(100, 120);
+		temp=trazi(root, x);
+	}while(temp!=NULL);
+	printf("\n Unosi se: %d\n", x);
+	root=unos(root, x);
+	i++;
+	}
+	printf("\r\n");
+	ispis(root);
+	getchar();
+	getchar();
+}
+
+int randnmb(int a, int b)
+{
+	return rand()%(b-a) + a;
+}
+
+stablo unos(stablo s, int x)
+{
+	if(s==NULL)
+	{
+		s=(stablo)malloc(sizeof(struct cvor));
+		s->el=x;
+		s->l=NULL;
+		s->d=NULL;
+	}
+	else if(x<s->el)
+		s->l=unos(s->l, x);
+	else if(x>s->el)
+		s->d=unos(s->d, x);
+	else
+		printf("Element vec postoji u stablu!");
+	return s;
+}
+
+void ispis(stablo s)
+{
+	if(s!=NULL)
+	{
+		ispis(s->l);
+		printf("\t %d ", s->el);
+		ispis(s->d);
+	}
+}
+
+
+stablo trazi(stablo s, int x)
+{
+	if(NULL==s)
+		return NULL;
+	else if (x<s->el)
+		return trazi(s->l, x);
+	else if (x>s->el)
+		return trazi(s->d, x);
+	return s;
+}

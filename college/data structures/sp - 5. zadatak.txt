@@ -1,0 +1,164 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<ctype.h>
+
+struct Skup;
+typedef struct Skup* Position;
+
+struct Skup
+{
+	int el;
+	Position next;
+};
+
+void UcitajIzDat(Position);
+void Ispis(Position);
+void Presjek(Position, Position, Position);
+void Unija(Position, Position, Position);
+
+void main()
+{
+	struct Skup A, B, P, U;
+	A.next=NULL;
+	B.next=NULL;
+	P.next=NULL;
+	U.next=NULL;
+
+	UcitajIzDat(&A);
+	UcitajIzDat(&B);
+
+	printf("Skup A: ");
+	Ispis(A.next);
+	printf("\r\n");
+
+	printf("Skup B: ");
+	Ispis(B.next);
+	printf("\r\n");
+
+	Unija(A.next, B.next, &U);
+	printf("Unija A i B: ");
+	Ispis(U.next);
+	printf("\r\n");
+
+	Presjek(A.next, B.next, &P);
+	printf("Presjek A i B: ");
+	Ispis(P.next);
+	printf("\r\n");
+
+
+}
+
+void UcitajIzDat(Position P)
+{
+	char imedat[128];
+	FILE *stream;
+	Position Q, temp;
+
+	printf("Unesite ime datoteke: ");
+	scanf_s(" %s", imedat, 128);
+	fopen_s(&stream, imedat, "r");
+	if(stream==NULL)
+		printf("Datoteka nije otvorena!");
+	else
+	{
+		while(!feof(stream))
+		{
+		Q=(Position)malloc(sizeof(struct Skup));
+		if(Q!=NULL)
+		{
+			fscanf_s(stream, " %d ", &Q->el);
+			temp=P;
+			while(temp->next!=NULL && temp->next->el > Q->el)
+				temp=temp->next;
+			if(temp->next!=NULL && temp->next->el == Q->el)
+			{
+				free(Q);
+			}
+			else
+			{
+				Q->next=temp->next;
+				temp->next=Q;
+			}
+		}
+		}
+		fclose(stream);
+	}
+}
+
+void Ispis(Position P)
+{
+	while(P!=NULL)
+	{
+		printf(" %d ", P->el);
+		P=P->next;
+	}
+}
+
+void Unija(Position A, Position B, Position C)
+{
+	Position Q, temp;
+	while(A!=NULL && B!=NULL)
+	{
+		Q=(Position)malloc(sizeof(struct Skup));
+		if(A->el > B->el)
+		{
+			Q->el=A->el;
+			A=A->next;
+		}
+		else if(A->el < B->el)
+		{
+			Q->el=B->el;
+			B=B->next;
+		}
+		else
+		{
+			Q->el=A->el;
+			A=A->next;
+			B=B->next;
+		}
+		Q->next=C->next;
+		C->next=Q;
+		C=Q; // isto kao i C=C->next;
+	}
+	if(A==NULL)
+		temp=B;
+	else
+		temp=A;
+	while(temp!=NULL)
+	{
+		Q = (Position) malloc (sizeof(struct Skup));
+		if(Q!=NULL)
+		{
+			Q->el=temp->el;
+			temp=temp->next;
+
+			Q->next=C->next;
+			C->next=Q;
+			C=Q;
+			
+		}
+	}
+}
+
+void Presjek(Position A, Position B, Position C)
+{
+	Position Q;
+	while(A!=NULL && B!=NULL)
+	{
+		if(A->el > B->el)
+			A=A->next;
+		else if(A->el < B->el)
+			B=B->next;
+		else
+		{
+			Q=(Position)malloc(sizeof(struct Skup));
+			Q->el=A->el;
+			A=A->next;
+			B=B->next;
+			Q->next=C->next;
+			C->next=Q;
+			C=Q;
+		}
+	}	
+}

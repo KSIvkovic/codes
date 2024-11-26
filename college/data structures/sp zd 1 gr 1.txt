@@ -1,0 +1,77 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<ctype.h>
+#include<time.h>
+
+struct cvor;
+typedef struct cvor* stablo;
+
+int randnmb(int, int);
+stablo unos(stablo, int);
+void ispis(stablo);
+
+struct cvor
+{
+	int el;
+	stablo l;
+	stablo d;
+};
+
+void main()
+{
+	stablo root=NULL;
+	int i=0;
+	srand((unsigned)time(NULL));
+	while(i<5)
+	{
+	root=unos(root, randnmb(100, 120));
+	i++;
+	}
+	ispis(root);
+	//ili
+	//int x=0;
+	//srand((unsigned)time(NULL));
+	//while(i<5)
+	//{
+	//x=randnmb(100, 120);
+	//root=unos(root, x);
+	//i++;
+	//}
+	getchar();
+	getchar();
+}
+
+int randnmb(int a, int b)
+{
+	double f = rand()/(RAND_MAX + 1.0);
+	return a + (int)((b - a + 1)*f);
+	// ili return rand()%(b-a) + a;
+}
+
+stablo unos(stablo s, int x)
+{
+	if(s==NULL)
+	{
+		s=(stablo)malloc(sizeof(struct cvor));
+		s->el=x;
+		s->l=NULL;
+		s->d=NULL;
+	}
+	else if(x<s->el)
+		s->l=unos(s->l, x);
+	else if(x>s->el)
+		s->d=unos(s->d, x);
+	else
+		printf("Element vec postoji u stablu!");
+	return s;
+}
+
+void ispis(stablo s)
+{
+	if(s!=NULL)
+	{
+		ispis(s->l);
+		printf(" %d ", s->el);
+		ispis(s->d);
+	}
+}

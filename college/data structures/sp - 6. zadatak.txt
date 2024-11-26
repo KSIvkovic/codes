@@ -1,0 +1,108 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<ctype.h>
+#include<time.h>
+
+struct cvor;
+typedef struct cvor* poz;
+
+void pushs(poz, int);
+void pushr(poz, int);
+int rand(int, int);
+void pop(poz);
+void ispis(poz);
+
+struct cvor{
+	int el;
+	poz next;
+};
+
+void main()
+{
+	struct cvor s,r;
+	s.next=NULL;
+	r.next=NULL;
+	int x;
+	char c = 0;
+	while(c!='k')
+	{
+		printf("\nIzbornik:");
+		printf("\n1-Push stog");
+		printf("\n2-Push red");
+		printf("\n3-Pop stog");
+		printf("\n4-Pop red");
+		printf("\n5-Ispis stog");
+		printf("\n6-Ispis red\n");
+		scanf(" %c", &c);
+		switch(c)
+		{
+		case '1':
+			x=rand(10, 100);
+			pushs(&s, x);
+			break;
+		case '2':
+			x=rand(10, 100);
+			pushr(&r, x);
+			break;
+		case '3':
+			pop(&s);
+			break;
+		case '4':
+			pop(&r);
+			break;
+		case '5':
+			ispis(s.next);
+			break;
+		case '6':
+			ispis(r.next);
+			break;
+		default:
+			printf("\nPogresan unos!\n");
+			break;
+		}
+	}
+}
+
+int rand(int a, int b)
+{
+	double f = rand()/(RAND_MAX + 1.0);
+	return a + (int)((b - a + 1)*f);
+}
+
+void pushs(poz p, int x)
+{
+	poz q = (poz)malloc(sizeof(struct cvor));
+	q->el=x;
+	q->next=p->next;
+	p->next=q;
+}
+
+void pushr(poz p, int x)
+{
+	static poz last=NULL;
+	poz q;
+	if(p->next==NULL)
+		last=p;
+	q=(poz)malloc(sizeof(struct cvor));
+	q->el=x;
+	q->next=last->next;
+	last->next=q;
+	last=q;
+}
+
+void ispis(poz p)
+{
+	while(p!=NULL)
+	{
+		printf(" [%d]\n", p->el);
+		p=p->next;
+	}
+}
+
+void pop(poz p)
+{
+	poz q;
+	q=p->next;
+	p->next=q->next;
+	free(q);
+}
