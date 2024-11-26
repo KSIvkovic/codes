@@ -1,0 +1,10 @@
+c:\users\kreso\documents\visual studio 2010\Projects\MineSweeper\MineSweeper\bin\Debug\MineSweeper.exe
+c:\users\kreso\documents\visual studio 2010\Projects\MineSweeper\MineSweeper\bin\Debug\MineSweeper.pdb
+c:\users\kreso\documents\visual studio 2010\Projects\MineSweeper\MineSweeper\obj\x86\Debug\MineSweeper.NewGame.resources
+c:\users\kreso\documents\visual studio 2010\Projects\MineSweeper\MineSweeper\obj\x86\Debug\MineSweeper.Properties.Resources.resources
+c:\users\kreso\documents\visual studio 2010\Projects\MineSweeper\MineSweeper\obj\x86\Debug\MineSweeper.csproj.GenerateResource.Cache
+c:\users\kreso\documents\visual studio 2010\Projects\MineSweeper\MineSweeper\obj\x86\Debug\MineSweeper.exe
+c:\users\kreso\documents\visual studio 2010\Projects\MineSweeper\MineSweeper\obj\x86\Debug\MineSweeper.pdb
+C:\Users\kreso\documents\visual studio 2010\Projects\MineSweeper\MineSweeper\obj\x86\Debug\MineSweeper.csprojResolveAssemblyReference.cache
+C:\Users\kreso\Documents\Visual Studio 2010\Projects\MineSweeper\MineSweeper\obj\x86\Debug\MineSweeper.MainForm.resources
+C:\Users\kreso\Documents\Visual Studio 2010\Projects\MineSweeper\MineSweeper\obj\x86\Debug\MineSweeper.WLForm.resources
